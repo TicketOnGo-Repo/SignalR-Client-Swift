@@ -1,0 +1,25 @@
+name: CI - Build & Test
+
+on:
+  push:
+    branches: [ "main", "release/**" ]
+  pull_request:
+    branches: [ "main" ]
+
+jobs:
+  build:
+    runs-on: macos-latest
+    strategy:
+      matrix:
+        swift: [5.8, 5.9, 5.10] # choose the Swift versions you support
+    steps:
+      - uses: actions/checkout@v4
+      - name: Install Xcode toolchain (macOS runner already has swifts)
+        run: swift --version
+      - name: Build package
+        run: swift build --configuration release
+      - name: Run tests
+        run: swift test
+      - name: Lint (optional)
+        run: |
+          if [ -f ./Scripts/lint.sh ]; then ./Scripts/lint.sh; fi
